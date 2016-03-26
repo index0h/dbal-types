@@ -1,0 +1,12 @@
+- hosts: all
+  become: yes
+  become_user: root
+  vars_files:
+    - vars/all.yml
+  roles:
+    - server
+    - selinux
+    - php
+    - mysql
+    - composer
+    - extra

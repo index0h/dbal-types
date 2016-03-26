@@ -1,0 +1,49 @@
+---
+- name: add repository
+  yum:
+    pkg={{ php.repository }}
+    state=present
+  when: php.repository is defined
+
+- name: install php packages
+  yum:
+    pkg={{ item }}
+    state=present
+    enablerepo={{ php.enablerepo }}
+  with_items: php.packages
+  when: php.packages is defined
+
+- name: copy php-fpm default configuration
+  template:
+    src=php.fpm.www.conf.j2
+    dest=/etc/php-fpm.d/www.conf
+    backup=no
+
+- name: copy php.ini configuration
+  template:
+    src=php.ini.j2
+    dest=/etc/php.ini
+    backup=no
+
+- name: copy xdebug.ini configuration
+  template:
+    src=15-xdebug.ini.j2
+    dest=/etc/php.d/15-xdebug.ini
+    backup=no
+
+- name: chmod php-fpm /var/lib/php directories
+  file:
+    path=/var/lib/php/{{ item }}
+    state=directory
+    owner=vagrant
+    group=vagrant
+    mode=0775
+  with_items:
+    - session
+    - wsdlcache
+
+- name: restart php-fpm
+  service:
+    name=php-fpm
+    enabled=yes
+    state=restarted

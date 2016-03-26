@@ -1,0 +1,23 @@
+---
+- name: create workspace directory
+  file:
+    path=/home/vagrant/work/
+    state=directory
+    owner=vagrant
+    group=vagrant
+
+- name: copy rc files to vagrant
+  copy:
+    src={{ item }}
+    dest=/home/vagrant/{{ item }}
+    owner=vagrant
+    group=vagrant
+  with_items: rcfiles
+
+- name: copy rc files to root
+  copy:
+    src={{ item }}
+    dest=/root/{{ item }}
+    owner=root
+    group=root
+  with_items: rcfiles

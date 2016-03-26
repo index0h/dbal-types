@@ -1,0 +1,53 @@
+---
+# Retrieve the current hostname, because {{ ansible_hostname }} still contains the old name
+- shell: hostname
+  register: current_hostname
+
+- name: install repository
+  yum:
+    name={{ mysql.repository }}
+    state=present
+  when: mysql.repository is defined
+
+- name: install percona packages
+  yum:
+    pkg={{ item }}
+    state=present
+    enablerepo={{ mysql.enablerepo }}
+  with_items: mysql.packages
+  when: mysql.packages is defined
+
+- name: ensure mysql is started
+  service:
+    name=mysql
+    state=started
+    sleep=5
+    enabled=yes
+
+- name: update root password for all root accounts
+  mysql_user:
+    name=root
+    host={{ item }}
+    check_implicit_admin=yes
+    password={{ mysql.root_password }}
+    login_user=root
+    login_password={{ mysql.root_password }}
+  with_items:
+    - "{{ current_hostname.stdout | lower }}"
+    - 127.0.0.1
+    - ::1
+    - localhost
+
+- name: set strict mode
+  mysql_variables:
+    variable=sql_mode
+    value={{ item }}
+    login_user=root
+    login_password={{ mysql.root_password }}
+  with_items: mysql.modes
+
+- name: ensure mysql is restarted
+  service:
+    name=mysql
+    state=restarted
+    sleep=5

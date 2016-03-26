@@ -1,0 +1,11 @@
+bindkey ^D detach     # Ctrl+D - detach screen
+bindkey ^N screen     # Ctrl+N - new tab
+bindkey ^K kill       # Ctrl+K - close tab
+bindkey ^[[1;5D prev  # Ctrl+Left - prev tab
+bindkey ^[[1;5C next  # Ctrl+Right - next tab
+bindkey ^[OQ title    # F2 - rename tab
+caption always "%{= kw}%-w%{= BW}%n %t%{-}%+w %-= @%H - %c" 
+startup_message off
+nonblock on
+altscreen on
+attrcolor b ".I"

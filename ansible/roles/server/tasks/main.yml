@@ -1,0 +1,32 @@
+---
+- name: install repositories
+  yum:
+    pkg={{ item }}
+    state=present
+  with_items: server.repositories
+
+- name: install packages
+  yum:
+    pkg={{ item }}
+    state=present
+    enablerepo={{ server.enablerepo }}
+  with_items: server.packages
+  when: server.packages is defined
+
+- name: configure the timezone
+  template:
+    src=timezone.tpl
+    dest=/etc/timezone
+
+- name: more configure the timezone
+  file:
+    src=/usr/share/zoneinfo/{{server.timezone}}
+    dest=/etc/localtime
+    state=link
+    force=yes
+    backup=yes
+
+- name: create locales
+  shell: localedef -c -i {{ item.name }} -f {{ item.encoding }} {{ item.name }}.{{ item.encoding }}
+  with_items: server.locales
+  when: server.locales is defined
