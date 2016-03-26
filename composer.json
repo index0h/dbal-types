@@ -1,5 +1,5 @@
 {
-    "name": "index0h/DBALTypes",
+    "name": "index0h/dbal-types",
     "description": "Additional DBAL types",
     "require-dev": {
         "phpunit/phpunit": "~5.1.7",
